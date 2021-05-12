@@ -47,6 +47,7 @@
     "xtr1common": "cpp",
     "xutility": "cpp",
     "algorithm": "cpp",
-    "queue": "cpp"
+    "queue": "cpp",
+    "stack": "cpp"
   }
 }

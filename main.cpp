@@ -1,19 +1,17 @@
 #include <iostream>
 
-#include "SECDstack.h"
+#include "SECD_Machine.h"
 
 int main(void) {
   /* code */
-  SECDStack s;
 
-  s.inputListBack("hello world");
-  s.inputListBack("cost");
-  s.inputListBack("draw");
+  SECDMachine machine;
+  bool is_act = machine.inputLambdaEquation();
+  if (is_act) {
+    machine.extractApplicationActualArgument();
+    machine.loadIdentifierS();
+    machine.loadIdentifierS();
+  }
 
-  std::cout << s.getListSecond() << std::endl;
-
-  // std::list<std::string> x = s.getRemoveFrontList();
-
-  // for (auto itr = x.begin(); itr != x.end(); ++itr) std::cout << *itr <<
-  // std::endl;
+  return 0;
 }
