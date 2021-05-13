@@ -137,7 +137,9 @@ class SECDMachine {
 
     } else {
       // closure 閉じた関数としてSにロードする
-      lambda.buildConstructclosure(C.getHead());
+      std::string closure_str = lambda.buildConstructclosure(C.getHead());
+      // std::cout << closure_str << std::endl;
+      S.inputListFront(closure_str);
     }
     C.deleteListHead();
     printMachineState();

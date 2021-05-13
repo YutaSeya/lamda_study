@@ -37,21 +37,32 @@ class LambdaEquation {
    * @fn constructclosure
    */
   std::string buildConstructclosure(const std::string c) {
+    std::string constructclosure;
     std::vector<std::pair<int, int> > ps;
     ps = getConsistencyBracketsPair(c);
     std::string sc;
 
     if (ps.size() == 1) {
       sc = c.substr(ps[0].first + 1, ps[0].second - 1);
-      std::cout << "sc = " << sc << std::endl;
+      // std::cout << "sc = " << sc << std::endl;
 
       // ラムダの数を数えて、closureを構築する
+      std::string lm_relate_buff;
+      std::string lm_arg_buff;
+      for (size_t i = 0; i < sc.size() - 1; i++) {
+        if (sc[i] == '@') {
+          lm_relate_buff = sc[i + 1];
+          lm_arg_buff = sc.substr(i + 3, sc.size());
+        }
+      }
+      // std::cout << lm_relate_buff << std::endl;
+      // std::cout << lm_arg_buff << std::endl;
+      constructclosure =
+          "< closure " + lm_relate_buff + ", " + lm_arg_buff + ", [ ] >";
 
     } else {
       // 複数個ある場合は変数が複数あるので、上手く抜き出す必要がある
     }
-
-    std::string constructclosure;
 
     return constructclosure;
   }

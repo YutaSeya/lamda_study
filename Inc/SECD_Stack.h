@@ -80,6 +80,11 @@ class SECDStack {
   void inputListBack(std::string data) { l.push_back(data); }
 
   /**
+   * @brief リストの前にデータを入れる
+   */
+  void inputListFront(std::string data) { l.push_front(data); }
+
+  /**
    * @brief リストの先頭要素を削除
    */
   void deleteListHead() { l.pop_front(); }
