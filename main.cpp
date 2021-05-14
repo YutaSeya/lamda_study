@@ -11,6 +11,7 @@ int main(void) {
     machine.extractApplicationActualArgument();
     machine.loadIdentifierS();
     machine.loadIdentifierS();
+    machine.loadIdentifierS();
   }
 
   return 0;

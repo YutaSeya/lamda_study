@@ -99,6 +99,7 @@ class SECDStack {
     }
 
     std::cout << title;
+
     std::cout << " : [ ";
 
     for (size_t i = 0; i < x.size(); i++) {

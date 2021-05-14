@@ -47,19 +47,19 @@ class LambdaEquation {
       // std::cout << "sc = " << sc << std::endl;
 
       // ラムダの数を数えて、closureを構築する
-      std::string lm_relate_buff;
-      std::string lm_arg_buff;
+      // λの関数の記号を取得
+      std::string lm_relate;
+      // λ関数の環境の記号を取得
+      std::string lm_arg;
       for (size_t i = 0; i < sc.size() - 1; i++) {
         if (sc[i] == '@') {
-          lm_relate_buff = sc[i + 1];
-          lm_arg_buff = sc.substr(i + 3, sc.size());
+          lm_relate = sc[i + 1];
+          lm_arg = sc.substr(i + 3, sc.size());
         }
       }
       // std::cout << lm_relate_buff << std::endl;
       // std::cout << lm_arg_buff << std::endl;
-      constructclosure =
-          "< closure " + lm_relate_buff + ", " + lm_arg_buff + ", [ ] >";
-
+      constructclosure = "< closure " + lm_relate + ", " + lm_arg + ", [ ] >";
     } else {
       // 複数個ある場合は変数が複数あるので、上手く抜き出す必要がある
     }

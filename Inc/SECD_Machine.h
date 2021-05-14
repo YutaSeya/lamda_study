@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <stack>
 #include <string>
 #include <vector>
@@ -18,14 +19,18 @@ class SECDMachine {
   SECDStack S;
   SECDStack E;
   SECDStack C;
-  SECDStack D;
+  std::vector<SECDStack> D;
   std::string input_lambda_eq;
 
  public:
   /**
    * @brief コンストラクタ
    */
-  SECDMachine() {}
+  SECDMachine() {
+    SECDStack D_buff;
+    D_buff.inputListBack("D0");
+    D.push_back(D_buff);
+  }
 
   /**
    * @brief デストラクタ
@@ -44,21 +49,35 @@ class SECDMachine {
     return is_brackets;
   }
 
-/**
- * @brief 2つの引数から環境へのエントリーを作成する関数
- * @fn assoc
- */
-#if 0
-  std::string createEnvironmentEntry(std::string c1, std::string c2) {
-    std::string entry;
-    return entry;
-  }
+  /**
+   * @brief 2つの引数から環境へのエントリーを作成する関数
+   * @fn assoc
+   */
+  void createEnvironmentEntry(const std::string c1, const std::string c2) {
+#if _MACHINE_DEBUG
+    std::cout << str1 << std::endl;
+    std::cout << str2 << std::endl;
 #endif
+    // str1からclosureのλ式のデータを取得
+    std::string entry;
+
+    // ラムダ式のデータ取得のための処理
+    std::string acq = c1.substr(10);
+    std::replace(acq.begin(), acq.end(), ',', ' ');
+    std::istringstream iss(acq);
+    // ラムダ式のデータを取得
+    std::string lm_relate;
+    std::string lm_arg;
+
+    iss >> lm_relate >> lm_arg;
+    // std::cout << lm_relate << ", " << lm_arg << std::endl;
+    }
 
   /**
    * @brief 引数である環境に同じく引数であるエントリーを追加する関数
    * @fn derive
    */
+  void entryDerive() {}
 
   /**
    * @brief 引数であるclosureから環境を抽出する関数
@@ -115,7 +134,13 @@ class SECDMachine {
     S.printList("S");
     E.printList("E");
     C.printList("C");
-    D.printList("D");
+    // Dに関しては、表示のプログラムを別途書く必要があり。
+    if (D.size() == 1) {
+      D[0].printList("D");
+    } else {
+      for (size_t i = 0; i < D.size(); i++) {
+      }
+    }
   }
 
   /**
@@ -129,6 +154,12 @@ class SECDMachine {
       if (C.getHead() == "ap") {
         // ap命令の実行を指示
         std::cout << "call me" << std::endl;
+        std::string str1 = S.getListFirst();
+        std::string str2 = S.getListSecond();
+
+        S.deleteListHead();
+        S.deleteListHead();
+        createEnvironmentEntry(str1, str2);
         is_ap = true;
       } else {
         // 実引数としてロード
