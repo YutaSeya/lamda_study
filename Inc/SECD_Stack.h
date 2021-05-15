@@ -111,4 +111,31 @@ class SECDStack {
 
     std::cout << " ]" << std::endl;
   }
+
+  /**
+   * @brief リストの要素を表示用文字列を返す
+   */
+  std::string getPrintListString() {
+    std::string result;
+    std::vector<std::string> x;
+    for (auto it = l.begin(); it != l.end(); it++) {
+      x.push_back(*it);
+    }
+
+    result += "[ ";
+
+    for (size_t i = 0; i < x.size(); i++) {
+      if (i == x.size() - 1)
+        result += x[i];
+      else
+        result += x[i] + ", ";
+    }
+    result += " ]";
+    return result;
+  }
+
+  /**
+   * @brief リストのサイズを取得する
+   */
+  size_t getListSize() { return l.size(); }
 };

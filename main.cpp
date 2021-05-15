@@ -9,9 +9,7 @@ int main(void) {
   bool is_act = machine.inputLambdaEquation();
   if (is_act) {
     machine.extractApplicationActualArgument();
-    machine.loadIdentifierS();
-    machine.loadIdentifierS();
-    machine.loadIdentifierS();
+    machine.executeToLoadIdentifier();
   }
 
   return 0;
