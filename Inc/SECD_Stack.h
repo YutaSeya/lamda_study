@@ -87,7 +87,9 @@ class SECDStack {
   /**
    * @brief リストの先頭要素を削除
    */
-  void deleteListHead() { l.pop_front(); }
+  void deleteListHead() {
+    if (!l.empty()) l.pop_front();
+  }
 
   /**
    * @brief リストの要素を表示
