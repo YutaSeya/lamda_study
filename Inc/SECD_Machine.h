@@ -177,7 +177,7 @@ class SECDMachine {
       // std::cout << std::endl;
       // std::cout << start_brackets << " " << end_brackets << std::endl;
 
-      std::string actual_var = sc.substr(ps[0].second + 1, start_brackets + 1);
+      std::string actual_var = sc.substr(ps[0].second + 2, start_brackets);
       std::string lambda_eq = sc.substr(start_brackets, end_brackets - 1);
 
       C.deleteListHead();
@@ -299,34 +299,47 @@ class SECDMachine {
 
       std::string lambdaeq_param = createEnvironmentEntry(str1, str2);
       printMachineState();
+      //std::cout << C.getHead() << std::endl;
 
       // std::cout << lambdaeq_param << std::endl;
       // lambdaeq_paramにカッコがあるかどうかで処理を変えていく
+      std::vector<std::pair<int, int> > ps;
+      ps = lambda.getConsistencyBracketsPair(C.getHead());
 
-      // 環境変数の処理の実行
-      // ラムダ式の文字列を取得するための前処理
-      std::replace(lambdaeq_param.begin(), lambdaeq_param.end(), ',', ' ');
-      std::istringstream iss(lambdaeq_param);
-      // ラムダ式の文字列を取得用変数
-      std::string lm_relate, lm_arg, real_arg;
-      // 取得処理
-      iss >> lm_relate >> lm_arg >> real_arg;
-      // 環境変数のデータを書き換え
-      if (lm_relate == lm_arg) {
-        // λx.xのようなとき
-        C.deleteListHead();
-        S.inputListBack(real_arg);
+      if(ps.size() == 0){
+        // 環境変数の処理の実行
+        // ラムダ式の文字列を取得するための前処理
+        std::replace(lambdaeq_param.begin(), lambdaeq_param.end(), ',', ' ');
+        std::istringstream iss(lambdaeq_param);
+        // ラムダ式の文字列を取得用変数
+        std::string lm_relate, lm_arg, real_arg;
+        // 取得処理
+        iss >> lm_relate >> lm_arg >> real_arg;
+        // 環境変数のデータを書き換え
+        if (lm_relate == lm_arg) {
+          // λx.xのようなとき
+          C.deleteListHead();
+          S.inputListBack(real_arg);
+        } else {
+          // λx.yのようなとき
+          C.deleteListHead();
+          S.inputListBack(lm_arg);
+        }
       } else {
-        // λx.yのようなとき
+        // ラムダ式がある場合はこっちかな
+        std::string closure_str = lambda.buildConstructclosure(C.getHead(), E.getHead());
+        //std::cout << closure_str << std::endl;  
         C.deleteListHead();
-        S.inputListBack(lm_arg);
+        S.inputListBack(closure_str);     
       }
 
       printMachineState();
+
       // 環境変数の処理が終わったため削除
       E.deleteListHead();
 
       restoreDTempStoreDataToRegister();
+      
     }
 
     if (C.isNull()) is_complete = true;
@@ -339,25 +352,25 @@ class SECDMachine {
    */
   void restoreDTempStoreDataToRegister() {
     // stackの内容を戻す
-    if (D.size() == 4) {
+    if (D.size() != 0) {
       if (!D[3].isNull()) {
-        for (size_t i = 0; i < D[3].getListSize(); i++) {
-          C.inputListBack(D[3].getHead());
-          D[3].deleteListHead();
+        std::vector<std::string> x = D[3].getPrintListVector();
+        for (size_t i = 0; i < x.size(); i++) {
+          S.inputListBack(x.at(i));
         }
       }
 
       if (!D[2].isNull()) {
-        for (size_t i = 0; i < D[2].getListSize(); i++) {
-          E.inputListBack(D[2].getHead());
-          D[2].deleteListHead();
+        std::vector<std::string> x = D[2].getPrintListVector();
+        for (size_t i = 0; i < x.size(); i++) {
+          E.inputListBack(x.at(i));
         }
       }
 
       if (!D[1].isNull()) {
-        for (size_t i = 0; i < D[1].getListSize(); i++) {
-          E.inputListBack(D[1].getHead());
-          D[1].deleteListHead();
+        std::vector<std::string> x = D[1].getPrintListVector();
+        for (size_t i = 0; i < x.size(); i++) {
+          C.inputListBack(x.at(i));
         }
       }
 

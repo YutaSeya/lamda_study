@@ -68,7 +68,7 @@ class LambdaEquation {
       }
       // std::cout << lm_relate << std::endl;
       // std::cout << lm_arg << std::endl;
-      constructclosure = "< closure " + lm_relate + ", " + lm_arg + ", [ ] >";
+      //constructclosure = "< closure " + lm_relate + ", " + lm_arg + ", [ ] >";
     } else {
       // 複数個ある場合は変数が複数あるので、上手く抜き出す必要がある
       sc = c.substr(ps[0].first + 1, ps[0].second - 1);
@@ -103,6 +103,79 @@ class LambdaEquation {
 
     return constructclosure;
   }
+
+  /**
+   * @brief この定義中で使われる構造closureを構築する関数
+   * @fn constructclosure
+   */
+  std::string buildConstructclosure(const std::string c, const std::string in_closure) {
+    std::string constructclosure;
+    std::vector<std::pair<int, int> > ps;
+    ps = getConsistencyBracketsPair(c);
+    std::string sc;
+    // λの関数の記号を取得
+    std::string lm_relate;
+    // λ関数の環境の記号を取得
+    std::string lm_arg;
+
+    if (ps.size() == 1) {
+      sc = c.substr(ps[0].first + 1, ps[0].second - 1);
+      // std::cout << "sc = " << sc << std::endl;
+
+      // ラムダの数を数えて、closureを構築する
+
+      for (size_t i = 0; i < sc.size() - 1; i++) {
+        if (sc[i] == '@') {
+          lm_relate = sc[i + 1];
+          lm_arg = sc.substr(i + 3, sc.size());
+          // scについてチェックをして、@があった場合は()を追加
+          for (size_t j = 0; j < lm_arg.size(); j++) {
+            if (lm_arg[j] == '@') {
+              lm_arg = "(" + lm_arg + ")";
+              break;
+            }
+          }
+          break;
+        }
+      }
+      // std::cout << lm_relate << std::endl;
+      // std::cout << lm_arg << std::endl;
+      
+    } else {
+      // 複数個ある場合は変数が複数あるので、上手く抜き出す必要がある
+      sc = c.substr(ps[0].first + 1, ps[0].second - 1);
+      // std::cout << sc << std::endl;
+      // std::cout << "call build construct" << std::endl;
+      // ラムダの数を数えて、closureを構築する
+
+      std::string lm_arg_buff;
+      for (size_t i = 0; i < sc.size() - 1; i++) {
+        if (sc[i] == '@') {
+          lm_relate = sc[i + 1];
+          lm_arg_buff = sc.substr(i + 3, sc.size());
+          break;
+        }
+      }
+
+      for (size_t i = 0; i < ps.size() - 2; i++) {
+        lm_arg += "(";
+      }
+      lm_arg += lm_arg_buff;
+
+      for (size_t j = 0; j < lm_arg.size(); j++) {
+        if (lm_arg[j] == '@') {
+          lm_arg = "(" + lm_arg + ")";
+          break;
+        }
+      }
+      // std::cout << lm_relate << ", " << lm_arg << std::endl;
+    }
+
+    constructclosure = "< closure " + lm_relate + ", " + lm_arg + ", [ " + in_closure + " ] >";
+
+    return constructclosure;
+  }
+
 #if 0
   /**
    * @brief 引数がabstractionであるかどうかを判定する関数

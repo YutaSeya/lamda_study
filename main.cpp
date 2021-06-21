@@ -7,9 +7,11 @@ int main(void) {
 
   SECDMachine machine;
   bool is_act = machine.inputLambdaEquation();
-  if (is_act) {
-    machine.extractApplicationActualArgument();
-    machine.executeToLoadIdentifier();
+  if (is_act) machine.extractApplicationActualArgument();
+  
+  bool is_end = false;
+  while(!is_end) {
+    is_end = machine.executeToLoadIdentifier();
   }
   //((@x.@y.(x y))((@x.@y.(x y))(@x.@y.y)))
 

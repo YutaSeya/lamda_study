@@ -137,7 +137,20 @@ class SECDStack {
   }
 
   /**
+   * @brief リストの要素を格納したvectorを返す
+   */
+  std::vector<std::string> getPrintListVector() {
+    std::vector<std::string> x;
+    for (auto it = l.begin(); it != l.end(); it++) {
+      x.push_back(*it);
+    }
+    return x;
+  }
+
+  /**
    * @brief リストのサイズを取得する
    */
   size_t getListSize() { return l.size(); }
 };
+
+

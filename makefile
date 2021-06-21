@@ -31,7 +31,7 @@ $(OBJDIR)/%.o:%.cpp
 all: clean $(TARGET)
 
 run:
-	$(TARGET)
+	$(TARGET).exe
 
 clean:
 	-rm -rf $(OBJDIR)
