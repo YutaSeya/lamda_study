@@ -164,12 +164,14 @@ class SECDMachine {
       // ()の組み合わせが複数ある場合は、ラムダ式が後ろにもあるはず
       // ()の依存関係を調べて、一つ目の式の外側に()があったらそれを抽出する
       // 入力をしっかりとしないと厳しい
+      bool is_outside_lamda = false;
       int start_brackets = ps[0].first;
       int end_brackets = ps[0].second;
       for (int i = 0; i < (int)ps.size(); ++i) {
         // if (i) std::cout << ", ";
         // std::cout << "(" << ps[i].first << ", " << ps[i].second << ")";
         if (end_brackets < ps[i].second) {
+          is_outside_lamda = true;
           start_brackets = ps[i].first;
           end_brackets = ps[i].second;
         }
@@ -177,39 +179,58 @@ class SECDMachine {
       // std::cout << std::endl;
       // std::cout << start_brackets << " " << end_brackets << std::endl;
 
-      std::string actual_var = sc.substr(ps[0].second + 2, start_brackets);
-      std::string lambda_eq = sc.substr(start_brackets, end_brackets - 1);
+      if(is_outside_lamda){
+        std::string actual_var = sc.substr(ps[0].second + 2, start_brackets);
+        std::string lambda_eq = sc.substr(start_brackets, end_brackets - 1);
 
-      C.deleteListHead();
-      C.inputListFront("ap");
-      C.inputListFront(actual_var);
-      C.inputListFront(lambda_eq);
-
-      sc = C.getHead().substr(1, C.getHead().length() - 2);
-      ps = lambda.getConsistencyBracketsPair(sc);
-      while (ps.size() > 2) {
-        printMachineState();
         C.deleteListHead();
-        start_brackets = ps[0].first;
-        end_brackets = ps[0].second;
-        for (int i = 0; i < (int)ps.size(); ++i) {
-          // if (i) std::cout << ", ";
-          // std::cout << "(" << ps[i].first << ", " << ps[i].second << ")";
-          if (end_brackets < ps[i].second) {
-            start_brackets = ps[i].first;
-            end_brackets = ps[i].second;
-          }
-        }
-
-        actual_var = sc.substr(ps[0].first, start_brackets);
-        lambda_eq = sc.substr(start_brackets, end_brackets);
-
         C.inputListFront("ap");
         C.inputListFront(actual_var);
         C.inputListFront(lambda_eq);
 
         sc = C.getHead().substr(1, C.getHead().length() - 2);
         ps = lambda.getConsistencyBracketsPair(sc);
+        while (ps.size() > 2) {
+          printMachineState();
+          C.deleteListHead();
+          start_brackets = ps[0].first;
+          end_brackets = ps[0].second;
+          for (int i = 0; i < (int)ps.size(); ++i) {
+            // if (i) std::cout << ", ";
+            // std::cout << "(" << ps[i].first << ", " << ps[i].second << ")";
+            if (end_brackets < ps[i].second) {
+              start_brackets = ps[i].first;
+              end_brackets = ps[i].second;
+            }
+          }
+
+          actual_var = sc.substr(ps[0].first, start_brackets);
+          lambda_eq = sc.substr(start_brackets, end_brackets);
+
+          C.inputListFront("ap");
+          C.inputListFront(actual_var);
+          C.inputListFront(lambda_eq);
+
+          sc = C.getHead().substr(1, C.getHead().length() - 2);
+          ps = lambda.getConsistencyBracketsPair(sc);
+        }
+      } else {
+        std::cout << "programming now" << std::endl;
+        // ()の組み合わせが一つの場合は、実引数があるときとないときがあり得る
+        std::string actual_var = sc.substr(ps[0].second + 1, sc.length());
+
+        if (actual_var.length() == 0) {
+          C.inputListBack(C.getHead());
+          C.deleteListHead();
+        } else {
+          // actual_varにデータが入ってないときと入っているときで処理を変更
+          std::string lambda_eq = sc.substr(ps[0].first, ps[0].second + 1);
+          C.deleteListHead();
+          C.inputListBack(actual_var);
+          C.inputListBack(lambda_eq);
+          C.inputListBack("ap");
+        }
+
       }
     }
 
@@ -326,11 +347,45 @@ class SECDMachine {
           S.inputListBack(lm_arg);
         }
       } else {
-        // ラムダ式がある場合はこっちかな
-        std::string closure_str = lambda.buildConstructclosure(C.getHead(), E.getHead());
-        //std::cout << closure_str << std::endl;  
-        C.deleteListHead();
-        S.inputListBack(closure_str);     
+        bool is_include_lamda_eq = false;
+        std::string check_lamda_eq = C.getHead();
+        for(size_t i = 0; i < check_lamda_eq.size(); i++){
+          if(check_lamda_eq.at(i) == '@'){
+            is_include_lamda_eq = true;
+            break;
+          }
+        }
+        if(is_include_lamda_eq){
+          // ラムダ式がある場合はこっちかな
+          std::string closure_str = lambda.buildConstructclosure(C.getHead(), E.getHead());
+          //std::cout << closure_str << std::endl;  
+          C.deleteListHead();
+          S.inputListBack(closure_str);  
+        } else {
+          // ラムダ式の文字列を取得用変数
+          int string_counter = 0;
+          std::vector<std::string> lamda_relate_param;
+          lamda_relate_param.resize(4);
+          for(size_t i = 0; i < lambdaeq_param.size(); i++){
+            if(lambdaeq_param[i] == ','){
+              string_counter++;
+            } else {
+              lamda_relate_param[string_counter] += lambdaeq_param[i];
+            }
+          }
+          // ラムダ式の文字列を取得用変数
+          std::string lm_relate, lm_arg, real_arg;
+          lm_relate = lamda_relate_param[0];
+          lm_arg = lamda_relate_param[1];
+          real_arg = lamda_relate_param[2];
+          for(size_t i = 0; i < lm_arg.size(); i++){
+            if(lm_relate[0] == lm_arg[i]){
+              lm_arg[i] = real_arg[0];
+            }
+          }
+          C.deleteListHead();
+          S.inputListBack(lm_arg);
+        }
       }
 
       printMachineState();

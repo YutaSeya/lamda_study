@@ -13,7 +13,11 @@ int main(void) {
   while(!is_end) {
     is_end = machine.executeToLoadIdentifier();
   }
+  // (@a.b)
+  // ((@x.x)y)
+  // ((@z.x)y)
   //((@x.@y.(x y))((@x.@y.(x y))(@x.@y.y)))
+  // ((@x.(x x))y)
 
   return 0;
 }
