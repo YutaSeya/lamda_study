@@ -215,7 +215,6 @@ class SECDMachine {
           ps = lambda.getConsistencyBracketsPair(sc);
         }
       } else {
-        std::cout << "programming now" << std::endl;
         // ()の組み合わせが一つの場合は、実引数があるときとないときがあり得る
         std::string actual_var = sc.substr(ps[0].second + 1, sc.length());
 
